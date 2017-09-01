@@ -8,7 +8,9 @@ import VueLazyLoad from 'vue-lazyload'
 Vue.config.productionTip = false
 
 Vue.use(VueLazyLoad,{
-  loading: 'dist/loading.gif'
+  preLoad: 1.3,
+  loading: '/static/loading-svg/loading-bars.svg',
+  attempt: 1
 })
 
 /* eslint-disable no-new */

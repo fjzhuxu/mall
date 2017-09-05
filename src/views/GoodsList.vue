@@ -10,7 +10,7 @@
         <div class="filter-nav">
           <span class="sortby">Sort by:</span>
           <a href="javascript:void(0)" class="default cur">Default</a>
-          <a href="javascript:void(0)" class="price">Price
+          <a href="javascript:void(0)" @click="sortGoods" class="price">Price
             <svg class="icon icon-arrow-short">
               <use xlink:href="#icon-arrow-short"></use>
             </svg>
@@ -70,6 +70,9 @@ export default {
     return {
       msg: 'hello vue',
       goodsList: [],
+      sortFlag: true,
+      page: 1,
+      pageSize: 8,
       priceFilter: [
         {
           startPrice: '0.00',
@@ -101,11 +104,29 @@ export default {
   },
   methods: {
     getGoodList() {
-      axios.get("/goods").then((result) => {
-        var res = result.data;
-        this.goodsList = res.result;
-        console.log(res);
+      var param = {
+        page: this.page,
+        pageSize: this.pageSize,
+        sort: this.sortFlag ? 1 : -1
+      }
+      axios.get("/goods/list", {
+        params: param
+      }).then((response) => {
+        let res = response.data;
+        if (res.status == "0") {
+          this.goodsList = res.result.list;
+        } else {
+          this.goodsList = [];
+        }
+        // var res = result.data;
+        // this.goodsList = res.result;
+        // console.log(res);
       })
+    },
+    sortGoods() {
+      this.sortFlag = !this.sortFlag;
+      this.page = 1;
+      this.getGoodList();
     },
     setPriceFilter(index) {
       this.priceChecked = index;

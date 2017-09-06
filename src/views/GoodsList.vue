@@ -48,7 +48,11 @@
                   </div>
                 </li>
               </ul>
+              <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30">
+                加载中....
+              </div>
             </div>
+
           </div>
         </div>
       </div>
@@ -64,6 +68,7 @@ import '@/assets/css/product.css'
 import NavHeader from '@/components/NavHeader'
 import NavFooter from '@/components/NavFooter'
 import NavBread from '@/components/NavBread'
+
 import axios from 'axios'
 export default {
   data() {
@@ -73,6 +78,7 @@ export default {
       sortFlag: true,
       page: 1,
       pageSize: 8,
+      busy: true,
       priceFilter: [
         {
           startPrice: '0.00',
@@ -103,7 +109,7 @@ export default {
     this.getGoodList();
   },
   methods: {
-    getGoodList() {
+    getGoodList(flag) {
       var param = {
         page: this.page,
         pageSize: this.pageSize,
@@ -114,7 +120,18 @@ export default {
       }).then((response) => {
         let res = response.data;
         if (res.status == "0") {
-          this.goodsList = res.result.list;
+          if (flag) {
+            this.goodsList = this.goodsList.concat(res.result.list);
+            if (res.result.count == 0) {
+              this.busy = true;
+            } else {
+              this.busy = false;
+            }
+          } else {
+            this.goodsList = res.result.list;
+            this.busy = false;
+          }
+
         } else {
           this.goodsList = [];
         }
@@ -127,6 +144,13 @@ export default {
       this.sortFlag = !this.sortFlag;
       this.page = 1;
       this.getGoodList();
+    },
+    loadMore: function() {
+      this.busy = true;
+      setTimeout(() => {
+        this.page++;
+        this.getGoodList(true);
+      }, 500);
     },
     setPriceFilter(index) {
       this.priceChecked = index;

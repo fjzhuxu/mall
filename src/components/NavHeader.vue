@@ -72,7 +72,7 @@ export default {
       userPwd: '',
       errorTip: false,
       loginModalFlag: false,
-      nickName:''
+      nickName: ''
     }
   },
   methods: {
@@ -89,12 +89,20 @@ export default {
         if (res.status == "0") {
           this.errorTip = false;
           this.loginModalFlag = false;
-          this.nickName=res.result.userName;
+          this.nickName = res.result.userName;
         } else {
           this.errorTip = true;
           this.loginModalFlag = true;
         }
 
+      })
+    },
+    logOut() {
+      axios.post("/users/logout", {}).then((response) => {
+        let res = response.data;
+        if(res.status=="0"){
+          this.nickName="";
+        }
       })
     }
   }

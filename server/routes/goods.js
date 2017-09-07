@@ -79,7 +79,7 @@ router.get("/list", function (req, res, next) {
 //加入到购物车
 router.post("/addCart", function (req, res, next) {
   var userId = '100000077',
-  productId = req.body.productId;
+    productId = req.body.productId;
   var User = require('../models/user');
   User.findOne({
     userId: userId
@@ -92,40 +92,61 @@ router.post("/addCart", function (req, res, next) {
     } else {
       console.log("userDoc:" + userDoc);
       if (userDoc) {
-        Goods.findOne({
-          productId: productId
-        }, function (err, doc) {
-          if (err1) {
-            res.json({
-              status: '1',
-              msg: err1.message
-            })
-          } else {
-            if (doc) {
-              doc.productNum = 1;
-              doc.checked = 1;
-              User.cartList.push(doc);
-              User.save(function (err2, doc2) {
-                if (doc2) {
-                  res.json({
-                    status: '1',
-                    msg: doc2.message
-                  })
-                } else {
-                  res.json({
-                    status: '0',
-                    msg: '',
-                    result: 'suc'
-                  })
-                }
-
-
-              });
-            }
-
+        let goodsItem = '';
+        userDoc.cartList.forEach(function (item) {
+          if (item.productId == productId) {
+            goodsItem = item;
+            item.productNum++;
           }
+        });
+        if (goodsItem) {
+          userDoc.save(function (err2, doc2) {
+            if (doc2) {
+              res.json({
+                status: '1',
+                msg: doc2.message
+              })
+            } else {
+              res.json({
+                status: '0',
+                msg: '',
+                result: 'suc'
+              })
+            }
+          });
+        } else {
+          Goods.findOne({
+            productId: productId
+          }, function (err1, doc) {
+            if (err1) {
+              res.json({
+                status: '1',
+                msg: err1.message
+              })
+            } else {
+              if (doc) {
+                doc.productNum = 1;
+                doc.checked = 1;
+                userDoc.cartList.push(doc);
+                userDoc.save(function (err2, doc2) {
+                  if (doc2) {
+                    res.json({
+                      status: '1',
+                      msg: doc2.message
+                    })
+                  } else {
+                    res.json({
+                      status: '0',
+                      msg: '',
+                      result: 'suc'
+                    })
+                  }
+                });
+              }
+            }
+          })
+        }
 
-        })
       }
 
     }

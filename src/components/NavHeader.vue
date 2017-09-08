@@ -75,7 +75,26 @@ export default {
       nickName: ''
     }
   },
+  mounted() {
+    this.checkLogin();
+  },
   methods: {
+    checkLogin(){
+         axios.get("/users/checkLogin").then((response)=>{
+                    var res = response.data;
+                    var path = this.$route.pathname;
+                    if(res.status=="0"){
+                     this.nickName = res.result;
+                      // this.$store.commit("updateUserInfo",res.result);
+                      this.loginModalFlag = false;
+                    }else{
+                      // if(this.$route.path!="/goods"){
+                      //   this.$router.push("/goods");
+                      // }
+                    }
+                });
+
+    },
     login() {
       if (!this.userName || !this.userPwd) {
         this.errorTip = true;
@@ -100,8 +119,8 @@ export default {
     logOut() {
       axios.post("/users/logout", {}).then((response) => {
         let res = response.data;
-        if(res.status=="0"){
-          this.nickName="";
+        if (res.status == "0") {
+          this.nickName = "";
         }
       })
     }

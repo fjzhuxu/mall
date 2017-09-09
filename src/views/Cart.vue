@@ -173,6 +173,15 @@ export default {
             this.modalConfirm = false;
         },
         delCart() {
+            axios.post("/users/cartDel", { productId: this.productId }).then((response) => {
+                let res = response.data;
+                if(res.status=='0'){
+                    this.modalConfirm=false;
+                    this.init();
+                }
+
+
+            })
 
         }
     }

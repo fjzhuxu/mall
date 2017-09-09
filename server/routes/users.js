@@ -94,12 +94,39 @@ router.get("/cartList", function (req, res, next) {
           result: doc.cartList
         });
       }
-
     }
-
-
   })
 
 });
+router.post("/cartDel", function (req, res, next) {
+  var userId = req.cookies.userId;
+  var productId = req.body.productId;
+  User.update({
+    userId: userId
+  }, {
+    $pull: {
+      'cartList': {
+        'productId': productId
+      }
+    }
+  }, function (err, doc) {
+    if (err) {
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      })
+    } else {
+      if (doc) {
+        res.json({
+          status: '0',
+          msg: '',
+          result: 'suc'
+        });
+      }
+    }
+  });
+
+})
 
 module.exports = router;

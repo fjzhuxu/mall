@@ -48,8 +48,8 @@
                   </div>
                 </li>
               </ul>
-              <div  class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30">
-                  <img src="./../assets/loading-spinning-bubbles.svg" v-show="loading">
+              <div class="view-more-normal" v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="30">
+                <img src="./../assets/loading-spinning-bubbles.svg" v-show="loading">
               </div>
             </div>
 
@@ -57,17 +57,38 @@
         </div>
       </div>
     </div>
+    <modal v-bind:mdShow="mdShow" v-on:close="closeModal">
+      <p slot="message">
+        请先登录,否则无法加入到购物车中!
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:;" @click="mdShow = false">关闭</a>
+      </div>
+    </modal>
+    <modal v-bind:mdShow="mdShowCart" v-on:close="closeModal">
+      <p slot="message">
+        <svg class="icon-status-ok">
+          <use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-status-ok"></use>
+        </svg>
+        <span>加入购物车成!</span>
+      </p>
+      <div slot="btnGroup">
+        <a class="btn btn--m" href="javascript:;" @click="mdShowCart = false">继续购物</a>
+        <router-link class="btn btn--m btn--red" href="javascript:;" to="/cart">查看购物车</router-link>
+      </div>
+    </modal>
     <div class="md-overlay" v-show="overLayFlag" @click.stop="closePop"></div>
     <nav-footer></nav-footer>
   </div>
 </template>
 
 <script>
-import '@/assets/css/base.css'
-import '@/assets/css/product.css'
+// import '@/assets/css/base.css'
+// import '@/assets/css/product.css'
 import NavHeader from '@/components/NavHeader'
 import NavFooter from '@/components/NavFooter'
 import NavBread from '@/components/NavBread'
+import Modal from '@/components/Modal'
 
 import axios from 'axios'
 export default {
@@ -79,7 +100,9 @@ export default {
       page: 1,
       pageSize: 8,
       busy: true,
-      loading:false,
+      loading: false,
+      mdShow: false,
+      mdShowCart: false,
       priceFilter: [
         {
           startPrice: '0.00',
@@ -104,7 +127,7 @@ export default {
     }
   },
   components: {
-    NavHeader, NavFooter, NavBread
+    NavHeader, NavFooter, NavBread, Modal
   },
   mounted: function() {
     this.getGoodList();
@@ -115,14 +138,14 @@ export default {
         page: this.page,
         pageSize: this.pageSize,
         sort: this.sortFlag ? 1 : -1,
-        priceLevel:this.priceChecked
+        priceLevel: this.priceChecked
       }
-      this.loading=true;
+      this.loading = true;
       axios.get("/goods/list", {
         params: param
       }).then((response) => {
         let res = response.data;
-        this.loading=false;
+        this.loading = false;
         if (res.status == "0") {
           if (flag) {
             this.goodsList = this.goodsList.concat(res.result.list);
@@ -156,16 +179,18 @@ export default {
         this.getGoodList(true);
       }, 500);
     },
-    addCart(productId){
-      axios.post("/goods/addCart",{productId:productId}).then((res)=>{
-        if(res.status==0){
-       console.log(res);
-        }else{
-          console.log(res);
-        }
+    addCart(productId) {
+      axios.post("/goods/addCart", { productId: productId }).then((res) => {
 
+        var res = res.data;
+        if (res.status == 0) {
+          this.mdShowCart = true;
+          this.$store.commit("updateCartCount", 1);
+        } else {
+          this.mdShow = true;
+        }
       });
-      
+
     },
     setPriceFilter(index) {
       this.priceChecked = index;
@@ -173,6 +198,10 @@ export default {
       this.closePop();
       this.page = 1;
       this.getGoodList();
+    },
+    closeModal() {
+      this.mdShow = false;
+      this.mdShowCart = false;
     },
     showFilterPop() {
       this.filterBy = true;

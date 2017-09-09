@@ -64,35 +64,40 @@
 
 <script>
 import './../assets/css/login.css'
+import { mapState } from 'vuex'
 import axios from 'axios'
 export default {
   data() {
     return {
-      userName: '',
-      userPwd: '',
+      userName: 'admin',
+      userPwd: '123456',
       errorTip: false,
       loginModalFlag: false,
       nickName: ''
     }
   },
+  computed: {
+  //  ...mapState(['nickName'])
+  },
   mounted() {
     this.checkLogin();
   },
   methods: {
-    checkLogin(){
-         axios.get("/users/checkLogin").then((response)=>{
-                    var res = response.data;
-                    var path = this.$route.pathname;
-                    if(res.status=="0"){
-                     this.nickName = res.result;
-                      // this.$store.commit("updateUserInfo",res.result);
-                      this.loginModalFlag = false;
-                    }else{
-                      // if(this.$route.path!="/goods"){
-                      //   this.$router.push("/goods");
-                      // }
-                    }
-                });
+    checkLogin() {
+          // console.log(mapState);
+      axios.get("/users/checkLogin").then((response) => {
+        var res = response.data;
+        var path = this.$route.pathname;
+        if (res.status == "0") {
+          this.nickName = res.result;
+          this.$store.commit("updateUserInfo", res.result);
+          this.loginModalFlag = false;
+        } else {
+          if (this.$route.path != "/goods") {
+            this.$router.push("/goods");
+          }
+        }
+      });
 
     },
     login() {

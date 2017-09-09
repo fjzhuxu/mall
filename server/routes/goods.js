@@ -101,10 +101,10 @@ router.post("/addCart", function (req, res, next) {
         });
         if (goodsItem) {
           userDoc.save(function (err2, doc2) {
-            if (doc2) {
+            if (err2) {
               res.json({
                 status: '1',
-                msg: doc2.message
+                msg: err2.message
               })
             } else {
               res.json({

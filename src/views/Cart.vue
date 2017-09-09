@@ -55,7 +55,7 @@
                             <li v-for="item in cartList">
                                 <div class="cart-tab-1">
                                     <div class="cart-item-check">
-                                        <a href="javascipt:;" class="checkbox-btn item-check-btn">
+                                        <a href="javascipt:;" class="checkbox-btn item-check-btn" v-bind:class="{'check':item.checked=='1'}" @click="editCart('checked',item)">
                                             <svg class="icon icon-ok">
                                                 <use xlink:href="#icon-ok"></use>
                                             </svg>
@@ -75,9 +75,9 @@
                                     <div class="item-quantity">
                                         <div class="select-self select-self-open">
                                             <div class="select-self-area">
-                                                <a class="input-sub">-</a>
+                                                <a class="input-sub" @click="editCart('minu',item)">-</a>
                                                 <span class="select-ipt">{{item.productNum}}</span>
-                                                <a class="input-add">+</a>
+                                                <a class="input-add" @click="editCart('add',item)">+</a>
                                             </div>
                                         </div>
                                     </div>
@@ -175,14 +175,34 @@ export default {
         delCart() {
             axios.post("/users/cartDel", { productId: this.productId }).then((response) => {
                 let res = response.data;
-                if(res.status=='0'){
-                    this.modalConfirm=false;
+                if (res.status == '0') {
+                    this.modalConfirm = false;
                     this.init();
                 }
-
-
             })
-
+        },
+        editCart(flag, item) {
+            if (flag == 'add') {
+                item.productNum++;
+            } else if (flag == 'minu') {
+                if (item.productNum > 1) {
+                    item.productNum--;
+                } else {
+                    return;
+                }
+            } else {
+                item.checked = item.checked=="1"?'0':'1';
+            }
+            axios.post("/users/cartEdit", {
+                productId: item.productId,
+                productNum: item.productNum,
+                checked:item.checked
+            }).then((response) => {
+                var res = response.data;
+                if (res.status == '0') {
+                    console.log(res);
+                }
+            })
         }
     }
 }

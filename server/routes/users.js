@@ -199,4 +199,112 @@ router.post("/editCheckAll", function (req, res, next) {
 
 })
 
+//查询当前用户的购物车数据
+router.get("/addressList", function (req, res, next) {
+  var userId = req.cookies.userId;
+  User.findOne({
+    userId: userId
+  }, function (err, doc) {
+    if (err) {
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      })
+    } else {
+      if (doc) {
+        res.json({
+          status: '0',
+          msg: '',
+          result: doc.addressList
+        });
+      }
+    }
+  })
+
+});
+router.post("/setDefault", function (req, res, next) {
+  var userId = req.cookies.userId,
+    addressId = req.body.addressId;
+  if (!addressId) {
+    res.json({
+      status: '1003',
+      msg: 'addressId is null',
+      result: ''
+    });
+  } else {
+    User.findOne({
+      userId: userId
+    }, function (err, doc) {
+      if (err) {
+        res.json({
+          status: '1',
+          msg: err.message,
+          result: ''
+        })
+      } else {
+        if (doc) {
+          var addressList = doc.addressList;
+          addressList.forEach((item) => {
+
+            if (item.addressId == addressId) {
+              item.isDefault = true;
+            } else {
+              item.isDefault = -false;
+            }
+
+          });
+          doc.save(function (err1, doc1) {
+            if (err1) {
+              res.json({
+                status: '1',
+                msg: err.message,
+                result: ''
+              });
+            } else {
+              res.json({
+                status: '0',
+                msg: '',
+                result: ''
+              });
+            }
+          })
+        }
+      }
+    })
+  }
+});
+
+router.post("/delAddress", function (req, res, next) {
+  var userId = req.cookies.userId,
+    addressId = req.body.addressId;
+  User.update({
+    userId: userId
+  }, {
+    $pull: {
+      'addressList': {
+        'addressId': addressId
+      }
+    }
+  }, function (err, doc) {
+    if (err) {
+      res.json({
+        status: '1',
+        msg: err.message,
+        result: ''
+      });
+    } else {
+      res.json({
+        status: '0',
+        msg: '',
+        result: ''
+      });
+    }
+  });
+
+
+
+})
+
+
 module.exports = router;

@@ -2,6 +2,7 @@ var express = require('express');
 var path = require('path');
 var favicon = require('serve-favicon');
 var logger = require('morgan');
+var mongoose = require('mongoose');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var ejs = require('ejs');
@@ -28,6 +29,20 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 
+//连接MongoDB数据库
+mongoose.connect('mongodb://127.0.0.1:27017/mall');
+
+mongoose.connection.on("connected", function () {
+  console.log("MongoDB connected success.")
+});
+
+mongoose.connection.on("error", function () {
+  console.log("MongoDB connected fail.")
+});
+
+mongoose.connection.on("disconnected", function () {
+  console.log("MongoDB connected disconnected.")
+});
 
 app.use(function (req, res, next) {
   if (req.cookies.userId) {

@@ -14,55 +14,58 @@ import './assets/css/base.css'
 import './assets/css/checkout.css'
 import './assets/css/product.css'
 Vue.config.productionTip = false
-Vue.use(infiniteScroll);
-Vue.use(Vuex);
+Vue.use(infiniteScroll)
+Vue.use(Vuex)
 Vue.use(VueLazyLoad, {
   preLoad: 1.3,
   loading: '/static/loading-svg/loading-bars.svg',
   attempt: 1
 })
-Vue.filter("currency", currency);
+Vue.filter('currency', currency)
 const store = new Vuex.Store({
   state: {
     nickName: '',
     cartCount: 0
   },
   mutations: {
-    //更新用户信息
-    updateUserInfo(state, nickName) {
-      state.nickName = nickName;
+    // 更新用户信息
+    updateUserInfo (state, nickName) {
+      state.nickName = nickName
     },
-    updateCartCount(state, cartCount) {
-      state.cartCount += cartCount;
+    updateCartCount (state, cartCount) {
+      state.cartCount += cartCount
+    },
+    initCartCount (state, cartCount) {
+      state.cartCount = cartCount
     }
   }
-});
+})
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
   store,
   router,
-  mounted() {
-    this.checkLogin();
+  mounted () {
+    this.checkLogin()
   },
   methods: {
-    checkLogin() {
-      axios.get("users/checkLogin").then(res => {
-        var res = res.data;
-        if (res.status == "0") {
-          console.log(res);
-          this.$store.commit("updateUserInfo", res.result);
+    checkLogin () {
+      axios.get('users/checkLogin').then(res => {
+        var res = res.data
+        if (res.status == '0') {
+          console.log(res)
+          this.$store.commit('updateUserInfo', res.result)
         } else {
-          if (this.$route.path != "/goods") {
-            this.$router.push("/goods");
+          if (this.$route.path != '/goods') {
+            this.$router.push('/goods')
           }
         }
-      });
+      })
     }
   },
   // template: '<App/>',
   // components: { App }
   render: h => h(App)
-});
+})
 
-//.$mount("#app")
+// .$mount("#app")

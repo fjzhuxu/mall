@@ -92,7 +92,7 @@ import Modal from '@/components/Modal'
 
 import axios from 'axios'
 export default {
-  data() {
+  data () {
     return {
       msg: 'hello vue',
       goodsList: [],
@@ -129,87 +129,84 @@ export default {
   components: {
     NavHeader, NavFooter, NavBread, Modal
   },
-  mounted: function() {
-    this.getGoodList();
+  mounted: function () {
+    this.getGoodList()
   },
   methods: {
-    getGoodList(flag) {
+    getGoodList (flag) {
       var param = {
         page: this.page,
         pageSize: this.pageSize,
         sort: this.sortFlag ? 1 : -1,
         priceLevel: this.priceChecked
       }
-      this.loading = true;
-      axios.get("/goods/list", {
+      this.loading = true
+      axios.get('/goods/list', {
         params: param
       }).then((response) => {
-        let res = response.data;
-        this.loading = false;
-        if (res.status == "0") {
+        let res = response.data
+        this.loading = false
+        if (res.status == '0') {
           if (flag) {
-            this.goodsList = this.goodsList.concat(res.result.list);
+            this.goodsList = this.goodsList.concat(res.result.list)
             if (res.result.count == 0) {
-              this.busy = true;
+              this.busy = true
             } else {
-              this.busy = false;
+              this.busy = false
             }
           } else {
-            this.goodsList = res.result.list;
-            this.busy = false;
+            this.goodsList = res.result.list
+            this.busy = false
           }
-
         } else {
-          this.goodsList = [];
+          this.goodsList = []
         }
         // var res = result.data;
         // this.goodsList = res.result;
         // console.log(res);
       })
     },
-    sortGoods() {
-      this.sortFlag = !this.sortFlag;
-      this.page = 1;
-      this.getGoodList();
+    sortGoods () {
+      this.sortFlag = !this.sortFlag
+      this.page = 1
+      this.getGoodList()
     },
-    loadMore: function() {
-      this.busy = true;
+    loadMore: function () {
+      this.busy = true
       setTimeout(() => {
-        this.page++;
-        this.getGoodList(true);
-      }, 500);
+        this.page++
+        this.getGoodList(true)
+      }, 500)
     },
-    addCart(productId) {
-      axios.post("/goods/addCart", { productId: productId }).then((res) => {
-
-        var res = res.data;
+    addCart (productId) {
+      axios.post('/goods/addCart', { productId: productId }).then((res) => {
+        var res = res.data
         if (res.status == 0) {
-          this.mdShowCart = true;
-          this.$store.commit("updateCartCount", 1);
+          this.mdShowCart = true
+          this.$store.commit('updateCartCount', 1) 
         } else {
-          this.mdShow = true;
+          this.mdShow = true
         }
-      });
+      })
+    },
+    setPriceFilter (index) {
+      this.priceChecked = index
 
+      this.closePop()
+      this.page = 1
+      this.getGoodList()
     },
-    setPriceFilter(index) {
-      this.priceChecked = index;
-
-      this.closePop();
-      this.page = 1;
-      this.getGoodList();
+    closeModal () {
+      this.mdShow = false
+      this.mdShowCart = false
     },
-    closeModal() {
-      this.mdShow = false;
-      this.mdShowCart = false;
+    showFilterPop () {
+      this.filterBy = true
+      this.overLayFlag = true
     },
-    showFilterPop() {
-      this.filterBy = true;
-      this.overLayFlag = true;
-    },
-    closePop() {
-      this.filterBy = false;
-      this.overLayFlag = false;
+    closePop () {
+      this.filterBy = false
+      this.overLayFlag = false
     }
   }
 }

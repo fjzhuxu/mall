@@ -43,35 +43,35 @@
     import NavBread from './../components/NavBread'
     import axios from 'axios'
     export default{
-        data(){
-            return{
-                orderId:'',
-                orderTotal:0
-            }
-        },
-        components:{
-          NavHeader,
-          NavFooter,
-          NavBread
-        },
-      
-        mounted(){
-            var orderId = this.$route.query.orderId;
-            console.log("orderId:"+orderId);
-            if(!orderId){
-              return;
-            }
-            axios.get("/users/orderDetail",{
-                params:{
-                  orderId:orderId
-                }
-            }).then((response)=>{
-                let res = response.data;
-                if(res.status=='0'){
-                    this.orderId = orderId;
-                    this.orderTotal = res.result.orderTotal;
-                }
-            });
+      data () {
+        return {
+          orderId: '',
+          orderTotal: 0
         }
+      },
+      components: {
+        NavHeader,
+        NavFooter,
+        NavBread
+      },
+    
+      mounted () {
+        var orderId = this.$route.query.orderId
+        console.log('orderId:' + orderId)
+        if (!orderId) {
+          return
+        }
+        axios.get('/users/orderDetail', {
+          params: {
+            orderId: orderId
+          }
+        }).then((response) => {
+          let res = response.data
+          if (res.status === '0') {
+            this.orderId = orderId
+            this.orderTotal = res.result.orderTotal
+          }
+        })
+  }
     }
 </script>

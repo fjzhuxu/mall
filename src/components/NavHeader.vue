@@ -67,7 +67,7 @@ import './../assets/css/login.css'
 import { mapState } from 'vuex'
 import axios from 'axios'
 export default {
-  data() {
+  data () {
     return {
       userName: 'admin',
       userPwd: '123456',
@@ -77,71 +77,69 @@ export default {
     }
   },
   computed: {
-    //  ...mapState(['nickName'])
-       nickName(){
-          return this.$store.state.nickName;
-        },
-        cartCount(){
-          return this.$store.state.cartCount;
-        }
+    ...mapState(['nickName', 'cartCount'])
+    // nickName () {
+    //   return this.$store.state.nickName
+    // },
+    // cartCount () {
+    //   return this.$store.state.cartCount
+    // }
   },
-  mounted() {
-    this.checkLogin();
+  mounted () {
+    this.checkLogin()
   },
   methods: {
-    checkLogin() {
+    checkLogin () {
       // console.log(mapState);
-      axios.get("/users/checkLogin").then((response) => {
-        var res = response.data;
-        var path = this.$route.pathname;
-        if (res.status == "0") {
+      axios.get('/users/checkLogin').then((response) => {
+        var res = response.data
+        var path = this.$route.pathname
+        if (res.status == '0') {
           // this.nickName = res.result;
-          this.$store.commit("updateUserInfo", res.result);
-          this.loginModalFlag = false;
-          this.getCartCount();
+          this.$store.commit('updateUserInfo', res.result)
+          this.loginModalFlag = false
+          this.getCartCount()
         } else {
-          if (this.$route.path != "/goods") {
-            this.$router.push("/goods");
+          if (this.$route.path != '/goods') {
+            this.$router.push('/goods')
           }
         }
-      });
-
+      })
     },
-    login() {
+    login () {
       if (!this.userName || !this.userPwd) {
-        this.errorTip = true;
-        return;
+        this.errorTip = true
+        return
       }
-      axios.post("/users/login", {
+      axios.post('/users/login', {
         userName: this.userName,
         userPwd: this.userPwd
       }).then((response) => {
-        let res = response.data;
-        if (res.status == "0") {
-          this.errorTip = false;
-          this.loginModalFlag = false;
-          this.$store.commit("updateUserInfo", res.result.userName);
-          this.getCartCount();
+        let res = response.data
+        if (res.status == '0') {
+          this.errorTip = false
+          this.loginModalFlag = false
+          this.$store.commit('updateUserInfo', res.result.userName)
+          this.getCartCount()
         } else {
-          this.errorTip = true;
-          this.loginModalFlag = true;
-        }
-
-      })
-    },
-    logOut() {
-      axios.post("/users/logout", {}).then((response) => {
-        let res = response.data;
-        if (res.status == "0") {
-          this.$store.commit("updateUserInfo", res.result.userName);
+          this.errorTip = true
+          this.loginModalFlag = true
         }
       })
     },
-    getCartCount() {
-      axios.get("users/getCartCount").then(res => {
-        var res = res.data;
-        this.$store.commit("updateCartCount", res.result);
-      });
+    logOut () {
+      axios.post('/users/logout', {}).then((response) => {
+        let res = response.data
+        if (res.status == '0') {
+          this.$store.commit('updateUserInfo', res.result.userName)
+        }
+      })
+    },
+    getCartCount () {
+      axios.get('users/getCartCount').then(res => {
+        var res = res.data
+        this.$store.commit('initCartCount', res.result)
+      })
     }
   }
 }

@@ -144,117 +144,117 @@ import Modal from './../components/Modal'
 // import { currency } from './../util/currency'
 import axios from 'axios'
 export default {
-    data() {
-        return {
-            cartList: [],
-            modalConfirm: false,
-            delItem: {},
+  data () {
+    return {
+      cartList: [],
+      modalConfirm: false,
+      delItem: {}
 
-        }
-    },
+    }
+  },
     // filters: {
     //     currency: currency
     // },
-    mounted() {
-        this.init();
+  mounted () {
+    this.init()
+  },
+  components: {
+    NavHeader, NavFooter, NavBread, Modal
+  },
+  computed: {
+    checkAllFlag () {
+      return this.checkedCount == this.cartList.length
     },
-    components: {
-        NavHeader, NavFooter, NavBread, Modal
+    checkedCount () {
+      var i = 0
+      this.cartList.forEach((item) => {
+        if (item.checked == '1') i++
+      })
+      return i
     },
-    computed: {
-        checkAllFlag() {
-            return this.checkedCount == this.cartList.length;
-        },
-        checkedCount() {
-            var i = 0;
-            this.cartList.forEach((item) => {
-                if (item.checked == '1') i++;
-            })
-            return i;
-        },
-        totalPrice() {
-            var money = 0;
-            this.cartList.forEach((item) => {
-                if (item.checked == '1') {
-                    money += parseFloat(item.salePrice) * parseInt(item.productNum);
-                }
-            })
-            return money;
+    totalPrice () {
+      var money = 0
+      this.cartList.forEach((item) => {
+        if (item.checked == '1') {
+          money += parseFloat(item.salePrice) * parseInt(item.productNum)
         }
-    },
-    methods: {
-        init() {
-            axios.get("/users/cartList").then((response) => {
-                let res = response.data;
-                this.cartList = res.result;
-            });
-        },
-        delCartConfirm(item) {
-            // console.log(productId);
-            this.modalConfirm = true;
-            this.delItem = item;
-        },
-        closeModal() {
-            this.modalConfirm = false;
-        },
-        delCart() {
-            axios.post("/users/cartDel", { productId: this.delItem.productId }).then((response) => {
-                let res = response.data;
-                if (res.status == '0') {
-                    this.modalConfirm = false;
-                    // var delCount = this.delItem.productNum;
-                    // this.$store.commit("updateCartCount", -delCount);
-                    this.init();
-                }
-            })
-        },
-        editCart(flag, item) {
-            if (flag == 'add') {
-                item.productNum++;
-            } else if (flag == 'minu') {
-                if (item.productNum > 1) {
-                    item.productNum--;
-                } else {
-                    return;
-                }
-            } else {
-                item.checked = item.checked == "1" ? '0' : '1';
-            }
-            axios.post("/users/cartEdit", {
-                productId: item.productId,
-                productNum: item.productNum,
-                checked: item.checked
-            }).then((response) => {
-                var res = response.data;
-                if (res.status == '0') {
-                    console.log(res);
-                }
-            })
-        },
-        toggleCheckAll() {
-            var flag = !this.checkAllFlag;
-            this.cartList.forEach((item) => {
-                item.checked = flag ? '1' : '0';
-            })
-            axios.post("/users/editCheckAll", {
-                checkAll: flag
-            }).then((response) => {
-                let res = response.data;
-                if (res.status == '0') {
-                    console.log("update suc");
-                }
-            })
-
-        },
-        checkOut() {
-            if (this.checkedCount > 0) {
-                this.$router.push({
-                    path: "/address"
-                })
-            }
-
-        }
+      })
+      return money
     }
+  },
+  methods: {
+    init () {
+      axios.get('/users/cartList').then((response) => {
+        let res = response.data
+        this.cartList = res.result
+      })
+    },
+    delCartConfirm (item) {
+            // console.log(productId);
+      this.modalConfirm = true
+      this.delItem = item
+    },
+    closeModal () {
+      this.modalConfirm = false
+    },
+    delCart () {
+      axios.post('/users/cartDel', { productId: this.delItem.productId }).then((response) => {
+        let res = response.data
+        if (res.status === '0') {
+          this.modalConfirm = false
+          var delCount = this.delItem.productNum
+          this.$store.commit('updateCartCount', -delCount)
+          this.init()
+        }
+      })
+    },
+    editCart (flag, item) {
+      if (flag === 'add') {
+        item.productNum++
+        this.$store.commit('updateCartCount', 1)
+      } else if (flag === 'minu') {
+        if (item.productNum > 1) {
+          item.productNum--
+          this.$store.commit('updateCartCount', -1)
+        } else {
+          return
+        }
+      } else {
+        item.checked = item.checked === '1' ? '0' : '1'
+      }
+      axios.post('/users/cartEdit', {
+        productId: item.productId,
+        productNum: item.productNum,
+        checked: item.checked
+      }).then((response) => {
+        var res = response.data
+        if (res.status == '0') {
+          console.log(res)
+        }
+      })
+    },
+    toggleCheckAll () {
+      var flag = !this.checkAllFlag
+      this.cartList.forEach((item) => {
+        item.checked = flag ? '1' : '0'
+      })
+      axios.post('/users/editCheckAll', {
+        checkAll: flag
+      }).then((response) => {
+        let res = response.data
+        if (res.status == '0') {
+          console.log('update suc')
+        }
+      })
+    },
+    checkOut () {
+      if (this.checkedCount > 0) {
+        this.$router.push({
+          path: '/address'
+        })
+      }
+    }
+  }
 }
 </script>
 <style  scoped>

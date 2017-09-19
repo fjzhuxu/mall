@@ -10,13 +10,14 @@ import OrderSuccess from '@/views/OrderSuccess'
 Vue.use(Router)
 
 export default new Router({
+  // mode: 'history',
   routes: [
     {
       path: '/',
       name: 'GoodsList',
       component: GoodsList
     },
-   {
+    {
       path: '/goods',
       name: 'GoodsList',
       component: GoodsList
@@ -39,7 +40,7 @@ export default new Router({
     {
       path: '/orderSuccess',
       name: 'OrderSuccess',
-      component:OrderSuccess
+      component: OrderSuccess
     }
   ]
 })
